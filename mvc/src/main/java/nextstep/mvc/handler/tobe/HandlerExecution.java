@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import javax.naming.ldap.Control;
 import nextstep.mvc.exception.MvcComponentException;
 import nextstep.mvc.handler.asis.Controller;
 import nextstep.mvc.handler.param.ArgumentResolver;
@@ -42,7 +41,7 @@ public class HandlerExecution {
             Object[] arguments = ArgumentResolver.resolveRequestParam(controller, handler, request, response);
 
             return (ModelAndView) handler.invoke(controller, arguments);
-        } catch (InvocationTargetException invocationTargetException){
+        } catch (InvocationTargetException invocationTargetException) {
             throw invocationTargetException.getCause();
         }
     }

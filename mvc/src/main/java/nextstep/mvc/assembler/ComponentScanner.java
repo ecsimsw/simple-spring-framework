@@ -6,16 +6,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import nextstep.mvc.DispatcherServlet;
 import nextstep.mvc.assembler.annotation.Component;
 import nextstep.mvc.assembler.annotation.ComponentScan;
 import nextstep.mvc.exception.MvcComponentException;
 import nextstep.mvc.support.annotation.AnnotationHandleUtils;
 import nextstep.web.annotation.Controller;
+import nextstep.web.annotation.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ComponentScanner {
 
     private static final Class<? extends Annotation>[] COMPONENT_ANNOTATIONS
-            = new Class[]{Component.class, ComponentScan.class, Controller.class};
+            = new Class[]{Component.class, ComponentScan.class, Controller.class, Repository.class};
 
     public Map<Class<?>, Object> scan(String rootPath) {
         Map<Class<?>, Object> container = new HashMap<>();

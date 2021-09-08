@@ -1,5 +1,6 @@
 package com.techcourse;
 
+import com.techcourse.repository.InMemoryUserRepository;
 import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration;
@@ -16,7 +17,8 @@ public class AppWebApplicationInitializer implements WebApplicationInitializer {
     private static final String[] FILTER_BASE_PACKAGE_PATHS = new String[]{"com/techcourse/support/web/filter"};
     private static final Assembler assembler = new Assembler("com/techcourse");
 
-    private final ManualHandlerMapping manualHandlerMapping = new ManualHandlerMapping();
+    private final InMemoryUserRepository userRepository = (InMemoryUserRepository) assembler.getBeanByType(InMemoryUserRepository.class);
+    private final ManualHandlerMapping manualHandlerMapping = new ManualHandlerMapping(userRepository);
 
     @Override
     public void onStartup(ServletContext servletContext) {

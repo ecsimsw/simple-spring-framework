@@ -14,6 +14,12 @@ public class LoginController implements Controller {
 
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
 
+    private final InMemoryUserRepository userRepository;
+
+    public LoginController(InMemoryUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Override
     public String execute(HttpServletRequest req, HttpServletResponse res) throws Exception {
         HttpSession session = req.getSession();
@@ -21,7 +27,7 @@ public class LoginController implements Controller {
             return "redirect:/index.jsp";
         }
 
-        return InMemoryUserRepository.findByAccount(req.getParameter("account"))
+        return userRepository.findByAccount(req.getParameter("account"))
                 .map(user -> {
                     log.info("User : {}", user);
                     return login(session, req.getParameter("password"), user);

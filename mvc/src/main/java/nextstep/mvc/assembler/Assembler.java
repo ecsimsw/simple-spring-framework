@@ -17,27 +17,28 @@ import nextstep.mvc.view.resolver.ViewResolverImpl;
 
 public class Assembler {
 
-    private final Map<Class<?>, Object> container;
+    private final BeanContainer container;
 
     private final String basePath;
 
     public Assembler(String basePath) {
         this.basePath = basePath;
 
-        this.container = new ComponentScanner().scan(basePath);
+        Map<Class<?>, Object> beans = new ComponentScanner().scan(basePath);
+        this.container = new BeanContainer(beans);
 
-        this.container.put(HandlerMappings.class, handlerMappings());
-        this.container.put(HandlerAdapters.class, handlerAdaptors());
-        this.container.put(ExceptionHandlerExecutor.class, new ExceptionHandlerExecutor(basePath));
-        this.container.put(ViewResolver.class, new ViewResolverImpl());
-        this.container.put(DispatcherServlet.class, dispatcherServlet());
+        this.container.addBean(HandlerMappings.class, handlerMappings());
+        this.container.addBean(HandlerAdapters.class, handlerAdaptors());
+        this.container.addBean(ExceptionHandlerExecutor.class, new ExceptionHandlerExecutor(basePath));
+        this.container.addBean(ViewResolver.class, new ViewResolverImpl());
+        this.container.addBean(DispatcherServlet.class, dispatcherServlet());
     }
 
     public DispatcherServlet dispatcherServlet() {
-        HandlerMappings handlerMappings = (HandlerMappings) container.get(HandlerMappings.class);
-        HandlerAdapters handlerAdaptors = (HandlerAdapters) container.get(HandlerAdapters.class);
-        ExceptionHandlerExecutor exceptionHandlerExecutor = (ExceptionHandlerExecutor) container.get(ExceptionHandlerExecutor.class);
-        ViewResolver viewResolver = (ViewResolver) container.get(ViewResolver.class);
+        HandlerMappings handlerMappings = (HandlerMappings) container.getBeanByType(HandlerMappings.class);
+        HandlerAdapters handlerAdaptors = (HandlerAdapters) container.getBeanByType(HandlerAdapters.class);
+        ExceptionHandlerExecutor exceptionHandlerExecutor = (ExceptionHandlerExecutor) container.getBeanByType(ExceptionHandlerExecutor.class);
+        ViewResolver viewResolver = (ViewResolver) container.getBeanByType(ViewResolver.class);
 
         final DispatcherServlet dispatcherServlet
                 = new DispatcherServlet(handlerMappings, handlerAdaptors, viewResolver, exceptionHandlerExecutor);
@@ -54,11 +55,15 @@ public class Assembler {
 
     private HandlerMappings handlerMappings(){
         AnnotationHandlerMapping annotationHandlerMapping = new AnnotationHandlerMapping(basePath);
-        this.container.put(AnnotationHandlerMapping.class, annotationHandlerMapping);
+        this.container.addBean(AnnotationHandlerMapping.class, annotationHandlerMapping);
 
         HandlerMappings handlerMappings = new HandlerMappings();
         handlerMappings.add(annotationHandlerMapping);
 
         return handlerMappings;
+    }
+
+    public Object getBeanByType(Class<?> type) {
+        return container.getBeanByType(type);
     }
 }
